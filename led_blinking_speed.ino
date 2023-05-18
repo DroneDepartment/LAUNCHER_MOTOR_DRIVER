@@ -1,7 +1,14 @@
 #include <LiquidCrystal_I2C.h>
 
 LiquidCrystal_I2C lcd(0x27, 16, 2); 
-
+#define led_red D8
+#define led_green D7
+#define led_blue D6
+#define l1 D0
+#define l2 D5
+#define sensor D4
+bool switch1 =false;
+bool switch2 =false;
 float t1=0.0;
 float t2=0.0;
 int count =0;
@@ -12,7 +19,7 @@ float time_in_sec = 0.0;
 void setup()
 {
   Serial.begin(9600);
-  lcd.init();
+  lcd.begin();
   lcd.backlight();
   lcd.clear();
   lcd.setCursor(3,0);
@@ -23,20 +30,59 @@ void setup()
   lcd.print("LAUNCHER");
   lcd.setCursor(2,1);
   lcd.print("SPEEDOMETER");
-  pinMode(6,OUTPUT);
-  pinMode(7,OUTPUT);
-  pinMode(8,OUTPUT);
-  pinMode(4,INPUT);
-  Serial.begin(9600);
-  digitalWrite(7,LOW);
-  digitalWrite(6,HIGH);
-  digitalWrite(8,LOW);
+  pinMode(led_red,OUTPUT);
+pinMode(led_green,OUTPUT);
+pinMode(led_blue,OUTPUT);
+pinMode(l1,OUTPUT);
+pinMode(l2,OUTPUT);
+pinMode(sensor,INPUT);
+digitalWrite(l1,HIGH);
+digitalWrite(l2,HIGH);
+  
+  
 }
 void loop()
 { 
- 
+ if(digitalRead(l1) == LOW && switch1 == false)
+ {
+   switch1 = true;
+   //count = 0;
+ }
+ if (digitalRead(l2) == LOW && switch2 == false)
+ {
+   switch2 = true;
+   //count = 0;
+
+ }
+
+ if(digitalRead(l2) == HIGH && digitalRead(l1) == HIGH)
+ {
+   switch1= false;
+   switch2= false;
+   count = 0;
+
+
+ }
+ if (switch1 == true && switch2 == false)
+ {
+   digitalWrite(led_blue,LOW);
+   digitalWrite(led_red,LOW);
+   digitalWrite(led_green,HIGH);
+ }
+if (switch2 == true && switch1 == false)
+ {
+   digitalWrite(led_blue,LOW);
+   digitalWrite(led_green,LOW);
+   digitalWrite(led_red,HIGH);
+ }
+if( switch1 == false && switch2 == false)
+{
+  digitalWrite(led_green,LOW);
+  digitalWrite(led_red,LOW);
+  digitalWrite(led_blue,HIGH);
+}
 // Serial.println(digitalRead(D4)); 
- if ((digitalRead(4)==0) && (count == 0))
+ if ((digitalRead(sensor)==0) && (count == 0) && (switch1 == true || switch2 == true ))
   {t1= micros();
     digitalWrite(8,HIGH);
    digitalWrite(6,LOW);
@@ -46,11 +92,11 @@ void loop()
     count = count+1;
  
   }
-  if ((digitalRead(4)==1) && ( count == 1))
+  if ((digitalRead(sensor)==1) && ( count == 1) && (switch1 == true || switch2 == true ))
   { t2= micros();
   count = count + 1;
   }
-  if (count == 2)
+  if (count == 2 && (switch1 == true || switch2 == true ))
   {
   time_difference = t2-t1;
  
@@ -87,9 +133,9 @@ Serial.print("time_difference =");
   //delay (1000);
 
   
-  digitalWrite(6,HIGH);
-  digitalWrite(8,LOW);
-  count = 0;
+  
+ 
   }
 
 }
+

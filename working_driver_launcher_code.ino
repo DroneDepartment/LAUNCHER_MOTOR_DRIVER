@@ -71,14 +71,14 @@ void loop()
 
 
 
-if (locked== false)
+if (locked== true)
 {
 digitalWrite(led_blue,LOW);
   digitalWrite(led_green,LOW);
   digitalWrite(led_red,HIGH);
   
 }
-if (locked == true)
+if (locked == false)
 {
 digitalWrite(led_blue,LOW);
     digitalWrite(led_red,LOW);
